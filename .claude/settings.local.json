@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const icons = require\\(''./node_modules/@tabler/icons-react''\\); console.log\\(''IconGlassFull:'', typeof icons.IconGlassFull\\); console.log\\(''IconGlass:'', typeof icons.IconGlass\\); console.log\\(''IconWine:'', typeof icons.IconWine\\);\")"
+    ]
+  }
+}
