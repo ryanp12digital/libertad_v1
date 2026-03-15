@@ -64,7 +64,7 @@ const Hero = () => {
                         </span>
                     </h1>
                     <p className="max-w-xl mx-auto text-gray-300 text-lg mb-10 font-light leading-relaxed text-balance">
-                        Um refúgio de sofisticação e natureza, desenhado para quem busca mais do que morar: busca sentir.
+                    Assessoria de investimentos com visão estratégica e focando no que importa: seu patrimônio.
                     </p>
 
                     <motion.a
