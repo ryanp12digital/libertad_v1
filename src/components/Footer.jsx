@@ -17,10 +17,15 @@ const Footer = () => {
         e.preventDefault();
         setStatus('loading');
         try {
+            const payload = {
+                ...form,
+                id_formulario: 'footer_fale_conosco',
+                timestamp: new Date().toISOString(),
+            };
             const res = await fetch(WEBHOOK_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(form),
+                body: JSON.stringify(payload),
             });
             if (!res.ok) throw new Error('Erro na requisição');
             setStatus('success');
