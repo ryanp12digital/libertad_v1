@@ -1,9 +1,35 @@
+import { useState } from 'react';
 import { FaInstagram, FaWhatsapp, FaLinkedinIn, FaEnvelope, FaPhone } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import { WEBHOOK_URL } from '../lib/webhooks';
 
 const FOOTER_GRADIENT = 'linear-gradient(63.88deg, #063227 0%, #02523E 28.18%, #06614B 52.06%, #02523E 73.55%, #063227 99.33%)';
 
 const Footer = () => {
+    const [form, setForm] = useState({ nome: '', email: '', telefone: '', mensagem: '' });
+    const [status, setStatus] = useState('idle'); // 'idle' | 'loading' | 'success' | 'error'
+
+    const handleChange = (e) => {
+        setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setStatus('loading');
+        try {
+            const res = await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(form),
+            });
+            if (!res.ok) throw new Error('Erro na requisição');
+            setStatus('success');
+            setForm({ nome: '', email: '', telefone: '', mensagem: '' });
+        } catch {
+            setStatus('error');
+        }
+    };
+
     return (
         <footer
             id="formulario"
@@ -68,6 +94,7 @@ const Footer = () => {
                     <div className="flex-1 min-w-0 max-w-xl lg:max-w-md">
                         <h3 className="font-sora text-xl sm:text-2xl font-semibold text-white mb-6">Fale conosco</h3>
                         <motion.form
+                            onSubmit={handleSubmit}
                             initial={{ opacity: 0, y: 16 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
@@ -78,8 +105,12 @@ const Footer = () => {
                                 <label htmlFor="footer-name" className="sr-only">Nome</label>
                                 <input
                                     id="footer-name"
+                                    name="nome"
                                     type="text"
                                     placeholder="Nome"
+                                    value={form.nome}
+                                    onChange={handleChange}
+                                    required
                                     className="w-full bg-white text-gray-800 rounded-lg px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-gold/50"
                                 />
                             </div>
@@ -87,8 +118,12 @@ const Footer = () => {
                                 <label htmlFor="footer-email" className="sr-only">E-mail</label>
                                 <input
                                     id="footer-email"
+                                    name="email"
                                     type="email"
                                     placeholder="E-mail"
+                                    value={form.email}
+                                    onChange={handleChange}
+                                    required
                                     className="w-full bg-white text-gray-800 rounded-lg px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-gold/50"
                                 />
                             </div>
@@ -96,8 +131,11 @@ const Footer = () => {
                                 <label htmlFor="footer-phone" className="sr-only">Telefone</label>
                                 <input
                                     id="footer-phone"
+                                    name="telefone"
                                     type="tel"
                                     placeholder="Telefone"
+                                    value={form.telefone}
+                                    onChange={handleChange}
                                     className="w-full bg-white text-gray-800 rounded-lg px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-gold/50"
                                 />
                             </div>
@@ -105,19 +143,29 @@ const Footer = () => {
                                 <label htmlFor="footer-message" className="sr-only">Mensagem</label>
                                 <textarea
                                     id="footer-message"
+                                    name="mensagem"
                                     rows={4}
                                     placeholder="Mensagem"
+                                    value={form.mensagem}
+                                    onChange={handleChange}
                                     className="w-full bg-white text-gray-800 rounded-lg px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-gold/50 resize-none"
                                 />
                             </div>
+                            {status === 'success' && (
+                                <p className="text-green-300 text-sm">Mensagem enviada com sucesso!</p>
+                            )}
+                            {status === 'error' && (
+                                <p className="text-red-300 text-sm">Erro ao enviar. Tente novamente.</p>
+                            )}
                             <div className="flex justify-end">
                                 <motion.button
-                                    type="button"
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    className="bg-brand-gold text-brand-dark font-semibold px-8 py-3 rounded-lg hover:bg-brand-highlight transition-colors"
+                                    type="submit"
+                                    disabled={status === 'loading'}
+                                    whileHover={status !== 'loading' ? { scale: 1.02 } : {}}
+                                    whileTap={status !== 'loading' ? { scale: 0.98 } : {}}
+                                    className="bg-brand-gold text-brand-dark font-semibold px-8 py-3 rounded-lg hover:bg-brand-highlight transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                                 >
-                                    Enviar
+                                    {status === 'loading' ? 'Enviando...' : 'Enviar'}
                                 </motion.button>
                             </div>
                         </motion.form>
